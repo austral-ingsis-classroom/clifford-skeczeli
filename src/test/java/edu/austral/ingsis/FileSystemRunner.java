@@ -1,7 +1,7 @@
 package edu.austral.ingsis;
 
-import edu.austral.ingsis.clifford.CommandHandler;
-import edu.austral.ingsis.clifford.FileSystem;
+import edu.austral.ingsis.clifford.command.CommandHandler;
+import edu.austral.ingsis.clifford.filesystem.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
 

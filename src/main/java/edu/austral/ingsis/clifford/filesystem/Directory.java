@@ -1,4 +1,4 @@
-package edu.austral.ingsis.clifford;
+package edu.austral.ingsis.clifford.filesystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public final class Directory implements FileSystemNode {
   }
 
   @Override
-  public String getName() {
+  public String name() {
     return name;
   }
 
@@ -31,7 +31,7 @@ public final class Directory implements FileSystemNode {
     children.add(node);
   }
 
-  void removeChild(FileSystemNode node) {
+  public void removeChild(FileSystemNode node) {
     children.remove(node);
   }
 }

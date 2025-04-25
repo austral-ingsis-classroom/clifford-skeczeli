@@ -1,18 +1,25 @@
-package edu.austral.ingsis.clifford;
+package edu.austral.ingsis.clifford.command;
 
+import edu.austral.ingsis.clifford.filesystem.Directory;
+import edu.austral.ingsis.clifford.filesystem.FileSystem;
+import edu.austral.ingsis.clifford.filesystem.FileSystemNode;
 import java.util.List;
 
 public final class RmCommand implements Command {
-  @Override
-  public String execute(FileSystem fileSystem, String[] args) {
-    RmArgs parsed = parseArgs(args);
-    String name = parsed.name();
-    boolean isRecursive = parsed.isRecursive();
+  private final String nodeName;
+  private final boolean isRecursive;
 
+  public RmCommand(String nodeName, boolean isRecursive) {
+    this.nodeName = nodeName;
+    this.isRecursive = isRecursive;
+  }
+
+  @Override
+  public String execute(FileSystem fileSystem) {
     Directory current = fileSystem.getCurrent();
     List<FileSystemNode> children = current.getChildren();
 
-    return rmResult(children, name, isRecursive, current);
+    return rmResult(children, nodeName, isRecursive, current);
   }
 
   private static String rmResult(
@@ -21,7 +28,7 @@ public final class RmCommand implements Command {
       if (foundNode(child, name)) {
         if (child instanceof Directory) {
           if (!isRecursive) {
-            return "cannot remove '" + name + "', is a directory";
+            throw new IllegalStateException("cannot remove '" + name + "', is a directory");
           } else {
             current.removeChild(child);
           }
@@ -32,18 +39,10 @@ public final class RmCommand implements Command {
         return "'" + name + "' removed";
       }
     }
-    return "Error: '" + name + "' not found";
-  }
-
-  private record RmArgs(String name, boolean isRecursive) {}
-
-  private RmArgs parseArgs(String[] args) {
-    if (args.length == 1) return new RmArgs(args[0], false);
-    if (args.length == 2 && args[0].equals("--recursive")) return new RmArgs(args[1], true);
-    throw new IllegalArgumentException("Invalid arguments for rm");
+    throw new IllegalStateException("'" + name + "' not found");
   }
 
   private static boolean foundNode(FileSystemNode child, String name) {
-    return child.getName().equals(name);
+    return child.name().equals(name);
   }
 }

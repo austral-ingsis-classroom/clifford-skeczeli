@@ -1,6 +1,7 @@
-package edu.austral.ingsis.clifford;
+package edu.austral.ingsis.clifford.filesystem;
 
 public class FileSystem {
+  // todo: hacer inmutable
   private final Directory root;
   private Directory current;
 
@@ -9,20 +10,20 @@ public class FileSystem {
     current = root;
   }
 
-  Directory getRoot() {
+  public Directory getRoot() {
     return root;
   }
 
   // Or maybe move state / session elsewhere...
-  Directory getCurrent() {
+  public Directory getCurrent() {
     return current;
   }
 
-  void setCurrent(Directory newCurrent) {
+  public void setCurrent(Directory newCurrent) {
     this.current = newCurrent;
   }
 
-  void addNode(FileSystemNode node) {
+  public void addNode(FileSystemNode node) {
     current.addChild(node);
   }
 }

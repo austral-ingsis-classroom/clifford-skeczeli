@@ -1,10 +1,12 @@
-package edu.austral.ingsis.clifford;
+package edu.austral.ingsis.clifford.command;
 
+import edu.austral.ingsis.clifford.filesystem.Directory;
+import edu.austral.ingsis.clifford.filesystem.FileSystem;
 import java.util.LinkedList;
 
 public final class PwdCommand implements Command {
   @Override
-  public String execute(FileSystem fileSystem, String[] args) {
+  public String execute(FileSystem fileSystem) {
     LinkedList<String> pathParts = getPathParts(fileSystem);
     StringBuilder builder = formatPath(pathParts);
     return builder.toString();
@@ -29,7 +31,7 @@ public final class PwdCommand implements Command {
     Directory node = fileSystem.getCurrent();
     LinkedList<String> pathParts = new LinkedList<>();
     while (node != null) {
-      pathParts.addFirst(node.getName());
+      pathParts.addFirst(node.name());
       node = node.getParent();
     }
     return pathParts;

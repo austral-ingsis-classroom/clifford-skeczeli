@@ -1,5 +1,5 @@
-package edu.austral.ingsis.clifford;
+package edu.austral.ingsis.clifford.filesystem;
 
 public sealed interface FileSystemNode permits Directory, File {
-  String getName();
+  String name();
 }

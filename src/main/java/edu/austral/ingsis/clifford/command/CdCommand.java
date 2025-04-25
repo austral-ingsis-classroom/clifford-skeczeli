@@ -1,14 +1,21 @@
-package edu.austral.ingsis.clifford;
+package edu.austral.ingsis.clifford.command;
+
+import edu.austral.ingsis.clifford.filesystem.Directory;
+import edu.austral.ingsis.clifford.filesystem.FileSystem;
+import edu.austral.ingsis.clifford.filesystem.FileSystemNode;
 
 public final class CdCommand implements Command {
+  private final String target;
+
+  public CdCommand(String target) {
+    this.target = target;
+  }
 
   @Override
-  public String execute(FileSystem fileSystem, String[] args) {
-    String input = args[0];
-
-    switch (input) {
+  public String execute(FileSystem fileSystem) {
+    switch (target) {
       case "." -> {
-        return successfulMoveMessage(fileSystem.getCurrent().getName());
+        return successfulMoveMessage(fileSystem.getCurrent().name());
       }
       case ".." -> {
         return moveToParent(fileSystem);
@@ -18,19 +25,21 @@ public final class CdCommand implements Command {
       }
     }
 
-    boolean isAbsolute = input.startsWith("/");
-    String[] pathParts = getPathParts(input);
+    boolean isAbsolute = target.startsWith("/");
+    String[] pathParts = getPathParts(target);
 
-    if (containsInvalidSegments(isAbsolute, pathParts, input)) {
-      return "Invalid path: '" + input + "'";
+    if (containsInvalidSegments(isAbsolute, pathParts, target)) {
+      throw new IllegalStateException("Invalid path: '" + target + "'");
     }
 
     FileSystemNode start = getStartingNode(fileSystem, isAbsolute);
     FileSystemNode finalNode = resolvePathFrom(start, pathParts, isAbsolute);
     ;
 
-    if (finalNode == null) return "'" + input + "' directory does not exist";
-    if (nodeIsNotDir(finalNode)) return "'" + input + "' is not a directory";
+    if (finalNode == null)
+      throw new IllegalStateException("'" + target + "' directory does not exist");
+    if (nodeIsNotDir(finalNode))
+      throw new IllegalStateException("'" + target + "' is not a directory");
 
     return moveToResolvedDirectory(fileSystem, (Directory) finalNode);
   }
@@ -78,7 +87,7 @@ public final class CdCommand implements Command {
 
   private FileSystemNode findChild(Directory dir, String name) {
     for (FileSystemNode child : dir.getChildren()) {
-      if (child.getName().equals(name)) {
+      if (child.name().equals(name)) {
         return child;
       }
     }
@@ -97,7 +106,7 @@ public final class CdCommand implements Command {
     Directory parent = fileSystem.getCurrent().getParent();
     if (nodeNotRoot(parent)) {
       fileSystem.setCurrent(parent);
-      return successfulMoveMessage(parent.getName());
+      return successfulMoveMessage(parent.name());
     } else {
       return successfulMoveMessage("/");
     }
@@ -109,7 +118,7 @@ public final class CdCommand implements Command {
 
   private String moveToResolvedDirectory(FileSystem fs, Directory newDir) {
     fs.setCurrent(newDir);
-    return successfulMoveMessage(newDir.getName());
+    return successfulMoveMessage(newDir.name());
   }
 
   private static String successfulMoveMessage(String name) {

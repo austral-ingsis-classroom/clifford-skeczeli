@@ -1,36 +1,36 @@
-package edu.austral.ingsis.clifford;
+package edu.austral.ingsis.clifford.command;
 
+import edu.austral.ingsis.clifford.filesystem.FileSystem;
+import edu.austral.ingsis.clifford.filesystem.FileSystemNode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public final class LsCommand implements Command {
+  private final String order;
+
+  public LsCommand(String order) {
+    this.order = order;
+  }
 
   @Override
-  public String execute(FileSystem fileSystem, String[] args) {
+  public String execute(FileSystem fileSystem) {
     List<FileSystemNode> currDirElements = fileSystem.getCurrent().getChildren();
     List<String> foundNodes = new ArrayList<>();
     for (FileSystemNode element : currDirElements) {
-      foundNodes.add(element.getName());
+      foundNodes.add(element.name());
     }
-    if (args.length == 0) return toString(foundNodes);
-    String ord = args[0];
-    if (isDesc(ord)) {
-      sortDescending(foundNodes);
-      return toString(foundNodes);
-    } else if (isAsc(ord)) {
-      sortAscending(foundNodes);
-      return toString(foundNodes);
-    }
-    return "Error: Invalid argument for --ord";
-  }
-
-  private static boolean isAsc(String ord) {
-    return Objects.equals(ord, "--ord=asc");
-  }
-
-  private static boolean isDesc(String ord) {
-    return Objects.equals(ord, "--ord=desc");
+    return switch (order) {
+      case "creation" -> toString(foundNodes);
+      case "asc" -> {
+        sortAscending(foundNodes);
+        yield toString(foundNodes);
+      }
+      case "desc" -> {
+        sortDescending(foundNodes);
+        yield toString(foundNodes);
+      }
+      default -> throw new IllegalStateException("Invalid argument for --ord");
+    };
   }
 
   private static void sortAscending(List<String> results) {
