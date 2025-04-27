@@ -6,12 +6,15 @@ import java.util.List;
 public final class Directory implements FileSystemNode {
   private final String name;
   private final List<FileSystemNode> children;
-  private final Directory parent;
 
-  public Directory(String name, Directory parent) {
+  public Directory(String name) {
     this.name = name;
-    this.children = new ArrayList<>();
-    this.parent = parent;
+    this.children = List.of();
+  }
+
+  private Directory(String name, List<FileSystemNode> children) {
+    this.name = name;
+    this.children = List.copyOf(children);
   }
 
   @Override
@@ -19,19 +22,54 @@ public final class Directory implements FileSystemNode {
     return name;
   }
 
+  @Override
+  public boolean isDirectory() {
+    return true;
+  }
+
   public List<FileSystemNode> getChildren() {
     return List.copyOf(children);
   }
 
-  public Directory getParent() {
-    return parent;
+  public Directory addChild(FileSystemNode node) {
+    List<FileSystemNode> newChildren = new ArrayList<>(children);
+    newChildren.add(node);
+    return new Directory(name, newChildren);
   }
 
-  void addChild(FileSystemNode node) {
-    children.add(node);
+  public Directory removeChild(String childName) {
+    List<FileSystemNode> newChildren = new ArrayList<>();
+    for (FileSystemNode child : children) {
+      if (!child.name().equals(childName)) {
+        newChildren.add(child);
+      }
+    }
+    return new Directory(name, newChildren);
   }
 
-  public void removeChild(FileSystemNode node) {
-    children.remove(node);
+  public FileSystemNode findChild(String childName) {
+    for (FileSystemNode child : children) {
+      if (child.name().equals(childName)) return child;
+    }
+    throw new IllegalStateException("Child not found: " + childName);
+  }
+
+  public Directory updateChild(FileSystemNode updatedChild) {
+    List<FileSystemNode> newChildren = new ArrayList<>();
+    for (FileSystemNode child : children) {
+      if (child.name().equals(updatedChild.name())) {
+        newChildren.add(updatedChild);
+      } else {
+        newChildren.add(child);
+      }
+    }
+    return new Directory(name, newChildren);
+  }
+
+  public boolean hasChild(String childName) {
+    for (FileSystemNode child : children) {
+      if (child.name().equals(childName)) return true;
+    }
+    return false;
   }
 }

@@ -14,7 +14,7 @@ public final class LsCommand implements Command {
 
   @Override
   public String execute(FileSystem fileSystem) {
-    List<FileSystemNode> currDirElements = fileSystem.getCurrent().getChildren();
+    List<FileSystemNode> currDirElements = fileSystem.getCurrentDirectory().getChildren();
     List<String> foundNodes = new ArrayList<>();
     for (FileSystemNode element : currDirElements) {
       foundNodes.add(element.name());
