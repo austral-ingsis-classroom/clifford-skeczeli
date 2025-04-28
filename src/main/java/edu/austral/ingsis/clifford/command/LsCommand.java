@@ -1,5 +1,6 @@
 package edu.austral.ingsis.clifford.command;
 
+import edu.austral.ingsis.clifford.Result;
 import edu.austral.ingsis.clifford.filesystem.FileSystem;
 import edu.austral.ingsis.clifford.filesystem.FileSystemNode;
 import java.util.ArrayList;
@@ -13,24 +14,28 @@ public final class LsCommand implements Command {
   }
 
   @Override
-  public String execute(FileSystem fileSystem) {
+  public Result execute(FileSystem fileSystem) {
     List<FileSystemNode> currDirElements = fileSystem.getCurrentDirectory().getChildren();
     List<String> foundNodes = new ArrayList<>();
     for (FileSystemNode element : currDirElements) {
       foundNodes.add(element.name());
     }
     return switch (order) {
-      case "creation" -> toString(foundNodes);
+      case "creation" -> getResult(fileSystem, foundNodes);
       case "asc" -> {
         sortAscending(foundNodes);
-        yield toString(foundNodes);
+        yield getResult(fileSystem, foundNodes);
       }
       case "desc" -> {
         sortDescending(foundNodes);
-        yield toString(foundNodes);
+        yield getResult(fileSystem, foundNodes);
       }
       default -> throw new IllegalStateException("Invalid argument for --ord");
     };
+  }
+
+  private Result getResult(FileSystem fileSystem, List<String> foundNodes) {
+    return new Result(toString(foundNodes), fileSystem);
   }
 
   private static void sortAscending(List<String> results) {

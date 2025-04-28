@@ -12,7 +12,7 @@ public final class Directory implements FileSystemNode {
     this.children = List.of();
   }
 
-  private Directory(String name, List<FileSystemNode> children) {
+  Directory(String name, List<FileSystemNode> children) {
     this.name = name;
     this.children = List.copyOf(children);
   }

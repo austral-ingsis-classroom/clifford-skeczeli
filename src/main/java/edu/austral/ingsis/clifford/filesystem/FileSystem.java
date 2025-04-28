@@ -9,7 +9,12 @@ public class FileSystem {
 
   public FileSystem() {
     this.root = new Directory("/");
-    this.currentPath = new ArrayList<>();
+    this.currentPath = List.of();
+  }
+
+  public FileSystem(Directory root, List<String> currentPath) {
+    this.root = root;
+    this.currentPath = List.copyOf(currentPath);
   }
 
   public Directory getRoot() {
@@ -24,22 +29,21 @@ public class FileSystem {
     return navigateTo(currentPath);
   }
 
-  public void updateCurrent(Directory updatedCurrent) {
-    root = updatePathNodes(root, currentPath, updatedCurrent);
+  public FileSystem updateCurrent(Directory updatedCurrent) {
+    return new FileSystem(
+        updatePathNodes(root, currentPath, updatedCurrent), List.copyOf(currentPath));
   }
 
-  public void addNode(FileSystemNode node) {
+  public FileSystem addNode(FileSystemNode node) {
     Directory updatedCurrent = getCurrentDirectory().addChild(node);
-    root = updatePathNodes(root, currentPath, updatedCurrent);
+    return new FileSystem(
+        updatePathNodes(root, currentPath, updatedCurrent), List.copyOf(currentPath));
   }
 
-  public void changeDirectory(String path) {
+  public FileSystem changeDirectory(String path) {
     List<String> resolvedPath = resolvePath(path);
-    if (navigateTo(resolvedPath) != null) {
-      this.currentPath = resolvedPath;
-    } else {
-      throw new IllegalStateException("Unable to resolve path: " + path);
-    }
+    navigateTo(resolvedPath);
+    return new FileSystem(root, List.copyOf(resolvedPath));
   }
 
   public String getCurrentPathString() {

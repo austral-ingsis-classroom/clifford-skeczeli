@@ -1,5 +1,6 @@
 package edu.austral.ingsis.clifford.command;
 
+import edu.austral.ingsis.clifford.Result;
 import edu.austral.ingsis.clifford.filesystem.Directory;
 import edu.austral.ingsis.clifford.filesystem.FileSystem;
 import edu.austral.ingsis.clifford.filesystem.FileSystemNode;
@@ -14,7 +15,7 @@ public final class RmCommand implements Command {
   }
 
   @Override
-  public String execute(FileSystem fileSystem) {
+  public Result execute(FileSystem fileSystem) {
     Directory current = fileSystem.getCurrentDirectory();
     FileSystemNode node = findNode(current, name);
 
@@ -23,8 +24,8 @@ public final class RmCommand implements Command {
     }
 
     Directory updatedCurrent = current.removeChild(name);
-    fileSystem.updateCurrent(updatedCurrent);
-    return "'" + name + "' removed";
+    FileSystem newFs = fileSystem.updateCurrent(updatedCurrent);
+    return new Result("'" + name + "' removed", newFs);
   }
 
   private FileSystemNode findNode(Directory directory, String nodeName) {

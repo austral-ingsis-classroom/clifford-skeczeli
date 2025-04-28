@@ -1,5 +1,6 @@
 package edu.austral.ingsis.clifford.command;
 
+import edu.austral.ingsis.clifford.Result;
 import edu.austral.ingsis.clifford.filesystem.Directory;
 import edu.austral.ingsis.clifford.filesystem.FileSystem;
 
@@ -11,8 +12,8 @@ public final class MkdirCommand implements Command {
   }
 
   @Override
-  public String execute(FileSystem fileSystem) {
-    fileSystem.addNode(new Directory(directory));
-    return "'" + directory + "' directory created";
+  public Result execute(FileSystem fileSystem) {
+    FileSystem newFs = fileSystem.addNode(new Directory(directory));
+    return new Result("'" + directory + "' directory created", newFs);
   }
 }

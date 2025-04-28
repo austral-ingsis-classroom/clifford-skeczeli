@@ -1,5 +1,6 @@
 package edu.austral.ingsis.clifford.command;
 
+import edu.austral.ingsis.clifford.Result;
 import edu.austral.ingsis.clifford.filesystem.FileSystem;
 
 public final class CdCommand implements Command {
@@ -10,12 +11,12 @@ public final class CdCommand implements Command {
   }
 
   @Override
-  public String execute(FileSystem fs) {
+  public Result execute(FileSystem fs) {
     try {
-      fs.changeDirectory(target);
-      return "moved to directory '" + fs.getCurrentDirectory().name() + "'";
+      FileSystem newFs = fs.changeDirectory(target);
+      return new Result("moved to directory '" + newFs.getCurrentDirectory().name() + "'", newFs);
     } catch (IllegalStateException e) {
-      return "'" + target + "' directory does not exist";
+      return new Result("'" + target + "' directory does not exist", fs);
     }
   }
 }

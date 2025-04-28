@@ -1,5 +1,6 @@
 package edu.austral.ingsis;
 
+import edu.austral.ingsis.clifford.Result;
 import edu.austral.ingsis.clifford.command.CommandHandler;
 import edu.austral.ingsis.clifford.command.factory.CdFactory;
 import edu.austral.ingsis.clifford.command.factory.CommandFactory;
@@ -24,7 +25,7 @@ public class FileSystemRunner {
           "touch", new TouchFactory());
 
   private final CommandHandler commandHandler = new CommandHandler(commands);
-  private final FileSystem fileSystem = new FileSystem();
+  private FileSystem fileSystem = new FileSystem();
 
   public FileSystem getFileSystem() {
     return fileSystem;
@@ -33,7 +34,9 @@ public class FileSystemRunner {
   public List<String> executeCommands(List<String> commands) {
     List<String> results = new ArrayList<>();
     for (String command : commands) {
-      results.add(commandHandler.handleCommand(command, fileSystem));
+      Result result = commandHandler.handleCommand(command, fileSystem);
+      fileSystem = result.fileSystem();
+      results.add(result.result());
     }
     return results;
   }

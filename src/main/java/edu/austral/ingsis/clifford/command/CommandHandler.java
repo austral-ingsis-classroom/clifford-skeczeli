@@ -1,5 +1,6 @@
 package edu.austral.ingsis.clifford.command;
 
+import edu.austral.ingsis.clifford.Result;
 import edu.austral.ingsis.clifford.command.factory.CommandFactory;
 import edu.austral.ingsis.clifford.filesystem.FileSystem;
 import java.util.Arrays;
@@ -12,16 +13,16 @@ public class CommandHandler {
     this.commandFactories = commandFactories;
   }
 
-  public String handleCommand(String command, FileSystem fileSystem) {
+  public Result handleCommand(String command, FileSystem fileSystem) {
     String[] args = command.split(" ");
 
     try {
       Command cmd = getCommand(args);
       return cmd.execute(fileSystem);
     } catch (IllegalArgumentException e) {
-      return e.getMessage();
+      return new Result(e.getMessage(), fileSystem);
     } catch (IllegalStateException e) {
-      return e.getMessage();
+      return new Result(e.getMessage(), fileSystem);
     }
   }
 
